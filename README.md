@@ -1,70 +1,168 @@
-# Getting Started with Create React App
+# Robot Fleet Monitoring Dashboard
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A real-time monitoring system for a simulated fleet of 6 autonomous robots carrying objects between destinations. Built to demonstrate skills in full-stack development, API integration, real-time data visualization, and physics-based sensor simulation.
 
-## Available Scripts
+## 🎯 Project Overview
 
-In the project directory, you can run:
+This project simulates a robotic fleet management system where 6 robots autonomously transport objects of varying weights from a starting point to one of two destinations (Point A: 100m or Point B: 50m). Each robot must complete its delivery within 10 seconds or the mission fails.
 
-### `npm start`
+The system features:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Physics-based sensor simulation** - Weight and speed affect temperature, pressure, and voltage readings
+- **Real-time monitoring dashboard** - Live updates every 500ms showing all robot statuses
+- **Performance analytics** - Tracks success rate, total deliveries, and failures
+- **Visual progress tracking** - Animated progress bars showing robot movement
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🚀 Features
 
-### `npm test`
+### Backend (Node.js + Express)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- RESTful API serving live robot data
+- Physics engine calculating sensor values based on:
+  - Object weight (heavier loads = higher temperature & pressure)
+  - Robot speed (faster movement = higher voltage)
+  - Distance traveled
+- Automatic mission cycling with randomized weights and destinations
+- Real-time status tracking (idle, moving, delivered, failed)
 
-### `npm run build`
+### Frontend (React)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- Real-time dashboard consuming REST API
+- Live statistics panel showing:
+  - Total deliveries
+  - Successful deliveries
+  - Failed deliveries
+  - Success rate percentage
+- System health indicator
+- 6 robot cards displaying:
+  - Current status (moving/delivered/failed)
+  - Cargo weight
+  - Destination and current position
+  - Time elapsed
+  - Live sensor readings (temperature, humidity, pressure, voltage)
+  - Animated progress bar with robot visualization
+- Color-coded alerts (green = normal, red = critical thresholds exceeded)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 🛠️ Technologies Used
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- **Frontend:** React, Recharts (for future data visualization)
+- **Backend:** Node.js, Express
+- **API:** RESTful architecture with CORS enabled
+- **State Management:** React Hooks (useState, useEffect)
+- **Styling:** Inline CSS with responsive grid layouts
 
-### `npm run eject`
+## 📦 Installation & Setup
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Prerequisites
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Node.js (v14 or higher)
+- npm
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Installation
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+1. Clone the repository:
 
-## Learn More
+```bash
+git clone https://github.com/heldrethtw/robot-fleet-dashboard.git
+cd robot-fleet-dashboard
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+2. Install dependencies:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```bash
+npm install
+```
 
-### Code Splitting
+3. Start the backend server:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```bash
+node server.js
+```
 
-### Analyzing the Bundle Size
+The API will run on `http://localhost:3001`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+4. In a separate terminal, start the React app:
 
-### Making a Progressive Web App
+```bash
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+The dashboard will open at `http://localhost:3000`
 
-### Advanced Configuration
+## 🎮 How It Works
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+1. **Initialization:** 6 robots are created and assigned random cargo weights (10-110kg) and destinations (Point A or B)
 
-### Deployment
+2. **Movement:** Each robot calculates the required speed to reach its destination within 10 seconds and begins moving
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+3. **Sensor Updates:** Every 100ms, sensor readings update based on:
 
-### `npm run build` fails to minify
+   - `Temperature = 20 + (weight/10)*5 + (speed/10)*3 + random variance`
+   - `Pressure = 1000 + (weight/10)*10 + random variance`
+   - `Voltage = 200 + (speed/10)*5 + random variance`
+   - `Humidity = 50 + random variance`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+4. **Completion:** Robots that reach their destination within 10 seconds succeed (green); others fail (red)
+
+5. **Reset:** After all 6 robots complete their missions, new random assignments begin automatically
+
+## 📊 API Endpoints
+
+### `GET /api/robots`
+
+Returns array of all 6 robots with current status and sensor data.
+
+**Response Example:**
+
+```json
+[
+  {
+    "id": 1,
+    "position": "45.23",
+    "destination": 50,
+    "carrying": 67.5,
+    "speed": "5.12",
+    "temperature": "58.34",
+    "humidity": "62.15",
+    "pressure": "1089.45",
+    "voltage": "207.23",
+    "status": "moving",
+    "timeElapsed": "8.80"
+  }
+]
+```
+
+## 🎯 Key Learning Outcomes
+
+This project demonstrates:
+
+- Building RESTful APIs with Express
+- Real-time data fetching and state management in React
+- Physics-based simulation logic
+- Responsive UI design with dynamic styling
+- Multi-entity system monitoring
+- Data aggregation and statistics tracking
+- API integration between frontend and backend
+
+## 🔮 Future Enhancements
+
+- Temperature history charts for individual robots
+- WebSocket implementation for true real-time updates (replacing polling)
+- Export delivery logs to CSV
+- Robot path visualization on 2D map
+- Adjustable difficulty settings (time limits, weight ranges)
+- Dark mode toggle
+
+## 👤 Author
+
+**Travis Heldreth**
+
+- GitHub: [@heldrethtw](https://github.com/heldrethtw)
+
+## 📝 License
+
+This project is open source and available under the MIT License.
+
+---
+
+Built as a portfolio project to demonstrate full-stack development skills for robotics and automation applications.
